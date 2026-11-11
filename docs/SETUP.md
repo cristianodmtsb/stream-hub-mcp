@@ -4,6 +4,22 @@ Todas as credenciais e tokens ficam salvos **apenas no seu computador** em `~/.s
 
 ---
 
+## 💡 Como executar os comandos do CLI
+
+O StreamHub oferece comandos para autorizar suas contas (`auth`) e checar o status (`status`). Você pode executá-los de acordo com a forma que instalou:
+
+- **Se você instalou como Plugin no Antigravity:**  
+  ```bash
+  node ~/.gemini/config/plugins/stream-hub/dist/bin/cli.js <comando>
+  ```
+- **Se você clonou o repositório em uma pasta local:**  
+  ```bash
+  cd caminho/para/stream-hub-mcp
+  node dist/bin/cli.js <comando>
+  ```
+
+---
+
 ## 1. 🟣 Twitch (Helix API)
 
 Para atualizar o título, categoria/jogo e tags da sua live na Twitch:
@@ -38,8 +54,9 @@ Abra ou crie o arquivo `~/.stream-hub/config.json` e adicione:
 No terminal, execute:
 ```bash
 node dist/bin/cli.js auth twitch
+# (ou se instalado via plugin: node ~/.gemini/config/plugins/stream-hub/dist/bin/cli.js auth twitch)
 ```
-Seu navegador abrirá para você conceder permissão ao seu canal. Pronto!
+Seu navegador abrirá para você conceder permissão ao seu canal. O StreamHub receberá o token e salvará automaticamente em `~/.stream-hub/tokens.json`.
 
 ---
 
@@ -81,6 +98,7 @@ Adicione ao seu `~/.stream-hub/config.json`:
 E no terminal execute:
 ```bash
 node dist/bin/cli.js auth youtube
+# (ou se instalado via plugin: node ~/.gemini/config/plugins/stream-hub/dist/bin/cli.js auth youtube)
 ```
 
 ---

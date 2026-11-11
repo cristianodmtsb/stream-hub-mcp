@@ -6,12 +6,20 @@ O StreamHub MCP utiliza arquivos **Markdown (`.md`)** para formatar as descriç�
 
 ## 📂 Onde os templates ficam salvos?
 
-Todos os seus templates ficam na pasta:
-```bash
-~/.stream-hub/templates/
-```
+O StreamHub busca templates em dois lugares, com uma ordem de prioridade clara:
 
-Por padrão, o arquivo principal é o `default.md`.
+1. **Seus Templates Personalizados (Prioridade Alta):**
+   ```bash
+   ~/.stream-hub/templates/
+   ```
+   Qualquer arquivo que você colocar aqui (ex: `default.md`, `jogos.md`) substitui o padrão do repositório. Edite à vontade sem medo de perder nada em futuras atualizações!
+
+2. **Templates Nativos do Repositório (Fallback):**
+   ```bash
+   templates/default.md   # Modelo focado em games
+   templates/coding.md    # Modelo focado em programação / live coding
+   ```
+   Se você não criar nenhum template na sua pasta pessoal, o StreamHub usa esses modelos prontos que já vêm empacotados.
 
 ---
 
@@ -79,10 +87,10 @@ Você pode usar as seguintes variáveis em qualquer parte do Markdown:
 
 ## 🎯 Criando Múltiplos Templates
 
-Você pode criar quantos templates quiser! Por exemplo:
-- `~/.stream-hub/templates/jogos.md` (com foco em games, tags de gameplay e setup).
-- `~/.stream-hub/templates/coding.md` (com categoria "Software and Game Development", links do GitHub e stack usada).
-- `~/.stream-hub/templates/podcast.md` (com foco em entrevistas e links dos convidados).
+Você pode criar quantos templates quiser dentro de `~/.stream-hub/templates/`! Por exemplo:
+- `jogos.md` (com foco em games, tags de gameplay e setup).
+- `coding.md` (com categoria "Software and Game Development", links do GitHub e stack usada).
+- `podcast.md` (com foco em entrevistas e links dos convidados).
 
 Para usar outro template no chat, basta dizer:
 > *"Crie a live de hoje usando o template coding.md"*
