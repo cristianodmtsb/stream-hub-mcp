@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "stream-hub": {
+      "command": "node",
+      "args": ["${pluginDir}/dist/index.js"]
+    }
+  }
+}

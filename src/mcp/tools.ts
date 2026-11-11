@@ -50,26 +50,41 @@ export class StreamOrchestrator {
   }
 
   public getTemplates(): StreamTemplate[] {
-    const dir = this.getTemplatesDir();
-    const list = TemplateEngine.listTemplates(dir);
-    if (list.length === 0) {
-      // Provide a built-in default template
-      return [
-        {
-          name: 'default',
-          frontmatter: {
-            categories: {
-              youtube: '20',
-              twitch: 'Software and Game Development',
-              kick: 'software-development'
-            },
-            default_tags: ['live', 'games', 'gameplay']
-          },
-          rawBody: `{{description}}\n\n---\n### 🤝 Participantes & Parceiros:\n{{partners}}\n\n---\n### 🔗 Redes Sociais:\n- Twitch: https://twitch.tv/\n- YouTube: https://youtube.com/@\n- Kick: https://kick.com/`
-        }
-      ];
+    const userDir = this.getTemplatesDir();
+    const userTemplates = TemplateEngine.listTemplates(userDir);
+
+    // Also look for bundled templates in the repository
+    const bundledDir = path.resolve(process.cwd(), 'templates');
+    const bundledTemplates = fs.existsSync(bundledDir) ? TemplateEngine.listTemplates(bundledDir) : [];
+
+    // User templates override bundled ones by name
+    const templateMap = new Map<string, StreamTemplate>();
+    for (const t of bundledTemplates) {
+      templateMap.set(t.name.toLowerCase(), t);
     }
-    return list;
+    for (const t of userTemplates) {
+      templateMap.set(t.name.toLowerCase(), t);
+    }
+
+    if (templateMap.size > 0) {
+      return Array.from(templateMap.values());
+    }
+
+    // Fallback built-in template
+    return [
+      {
+        name: 'default',
+        frontmatter: {
+          categories: {
+            youtube: '20',
+            twitch: 'Software and Game Development',
+            kick: 'software-development'
+          },
+          default_tags: ['live', 'games', 'gameplay']
+        },
+        rawBody: `{{description}}\n\n---\n### 🤝 Participantes & Parceiros:\n{{partners}}\n\n---\n### 🔗 Redes Sociais:\n- Twitch: https://twitch.tv/\n- YouTube: https://youtube.com/@\n- Kick: https://kick.com/`
+      }
+    ];
   }
 
   public getTemplateByName(name = 'default'): StreamTemplate {

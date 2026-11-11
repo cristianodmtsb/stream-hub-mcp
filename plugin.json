@@ -1,0 +1,8 @@
+{
+  "name": "stream-hub",
+  "version": "0.1.0",
+  "description": "Configura e agenda transmissões ao vivo automaticamente no YouTube, Twitch e Kick com thumbnails, SEO tags e templates Markdown.",
+  "author": "Cris Castro",
+  "repository": "https://github.com/cristianodmtsb/stream-hub-mcp",
+  "license": "MIT"
+}
