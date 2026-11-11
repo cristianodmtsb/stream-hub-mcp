@@ -130,21 +130,59 @@ export class StreamOrchestrator {
     };
   }
 
-  public async authenticatePlatform(platform: string): Promise<{ success: boolean; message: string; authUrl?: string }> {
+  public async authenticatePlatform(
+    platform: string,
+    credentials?: { channelSlug?: string; apiKey?: string; clientId?: string; clientSecret?: string }
+  ): Promise<{ success: boolean; message: string; authUrl?: string }> {
     const norm = platform.toLowerCase();
+
+    // If credentials are provided directly in chat, save them automatically
+    if (credentials) {
+      if (norm === 'kick') {
+        if (!credentials.channelSlug || !credentials.apiKey) {
+          return {
+            success: false,
+            message: 'Para configurar a Kick, preciso do seu `channelSlug` (nome do canal) e da sua `apiKey`. Exemplo: `/auth-kick canal chave123`'
+          };
+        }
+        await this.configManager.savePlatformConfig('kick', {
+          channelSlug: credentials.channelSlug,
+          apiKey: credentials.apiKey
+        });
+        return {
+          success: true,
+          message: `✅ Kick configurada com sucesso para o canal '${credentials.channelSlug}'! Já pode transmitir.`
+        };
+      }
+
+      // If YouTube or Twitch credentials provided
+      if (credentials.clientId || credentials.clientSecret) {
+        await this.configManager.savePlatformConfig(norm, {
+          clientId: credentials.clientId,
+          clientSecret: credentials.clientSecret
+        });
+      }
+    }
+
     const config = await this.configManager.getPlatformConfig(norm);
 
     if (norm === 'kick') {
+      if (!config?.channelSlug || !config?.apiKey) {
+        return {
+          success: false,
+          message: 'A Kick precisa do seu nome de canal (channelSlug) e chave de API. Me informe os dois (ex: "Configurar kick: canal x, chave y") que salvo para você!'
+        };
+      }
       return {
         success: true,
-        message: 'Para a Kick, insira seu channelSlug e apiKey em ~/.stream-hub/config.json.'
+        message: `✅ Kick já está configurada para o canal '${config.channelSlug}'.`
       };
     }
 
     if (!config?.clientId) {
       return {
         success: false,
-        message: `Configure o clientId de '${platform}' primeiro em ~/.stream-hub/config.json (consulte o docs/SETUP.md para o passo a passo).`
+        message: `Para autenticar ${platform.toUpperCase()}, informe seu Client ID e Client Secret aqui no chat (ou configure em ~/.stream-hub/config.json).`
       };
     }
 

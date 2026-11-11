@@ -35,13 +35,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'authenticate_platform',
-        description: 'Triggers browser OAuth authorization directly from chat for a platform (youtube or twitch).',
+        description: 'Triggers authentication or sets credentials directly from chat for a platform (youtube, twitch, or kick).',
         inputSchema: {
           type: 'object',
           properties: {
             platform: {
               type: 'string',
-              description: 'Platform to authenticate: "youtube" or "twitch"'
+              description: 'Platform to authenticate: "youtube", "twitch", or "kick"'
+            },
+            channelSlug: {
+              type: 'string',
+              description: 'Kick channel slug / username (e.g. "meucanal")'
+            },
+            apiKey: {
+              type: 'string',
+              description: 'Kick API key or token'
+            },
+            clientId: {
+              type: 'string',
+              description: 'OAuth Client ID for YouTube or Twitch'
+            },
+            clientSecret: {
+              type: 'string',
+              description: 'OAuth Client Secret for YouTube or Twitch'
             }
           },
           required: ['platform']
@@ -112,8 +128,13 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
       }
 
       case 'authenticate_platform': {
-        const { platform } = args as any;
-        const res = await orchestrator.authenticatePlatform(platform);
+        const { platform, channelSlug, apiKey, clientId, clientSecret } = args as any;
+        const res = await orchestrator.authenticatePlatform(platform, {
+          channelSlug,
+          apiKey,
+          clientId,
+          clientSecret
+        });
         return {
           content: [{ type: 'text', text: JSON.stringify(res, null, 2) }]
         };

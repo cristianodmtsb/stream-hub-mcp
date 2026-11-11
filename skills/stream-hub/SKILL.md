@@ -20,6 +20,11 @@ When the user says "conectar youtube", "autenticar twitch" or types `/auth-youtu
 2. Present the returned authentication URL as a clickable link and inform the user that the browser was opened.
 3. Once the user approves in the browser, inform them that the platform is ready.
 
+When the user says "conectar kick" or types `/auth-kick`:
+1. Ask the user for their Kick channel name (`channelSlug`) and their API Key/Token if not already provided.
+2. Call `authenticate_platform({ platform: "kick", channelSlug, apiKey })`.
+3. The tool saves the credentials safely in `~/.stream-hub/config.json`.
+
 ## Workflow for Live Creation
 
 ### 1. Context & Game Detection

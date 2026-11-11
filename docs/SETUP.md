@@ -105,8 +105,16 @@ node dist/bin/cli.js auth youtube
 
 ## 3. 🟢 Kick
 
-A Kick utiliza a API de canais para atualizar metadados:
+A Kick utiliza a API de canais para atualizar título e categoria da transmissão:
 
+### Método 1: Direto pelo Chat (Sem abrir arquivos)
+Basta dizer no chat:
+> *"Conectar Kick canal meu_usuario chave_api_aqui"* ou `/auth-kick`
+O agente chamará a ferramenta e salvará de forma segura no seu `~/.stream-hub/config.json`.
+
+---
+
+### Método 2: Manual via JSON
 1. Abra seu `~/.stream-hub/config.json`.
 2. Adicione os dados do seu canal:
 ```json
