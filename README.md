@@ -113,10 +113,10 @@ Você pode gerenciar tudo diretamente na conversa com o agente:
 
 | Comando | O que faz |
 |---|---|
+| `/stream-status` | Exibe o status de cada plataforma (conectada ou pendente) |
 | `/auth-youtube` | Inicia a autorização com o YouTube Live pelo navegador |
 | `/auth-twitch` | Inicia a autorização com a Twitch Helix pelo navegador |
 | `/auth-kick` | Configura seu canal e API Key da Kick diretamente no chat |
-| `Status` ou `Verificar plataformas` | Exibe quais plataformas estão ativas e autenticadas |
 
 ---
 

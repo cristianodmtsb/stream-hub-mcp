@@ -9,10 +9,18 @@ This skill guides the agent in using the `stream-hub` MCP tools to configure mul
 
 ## When to Activate
 Activate this skill whenever the user:
-- Types slash commands like `/auth-youtube`, `/auth-twitch`, `/auth-kick` or asks to connect/authenticate accounts.
+- Types slash commands: `/stream-status`, `/auth-youtube`, `/auth-twitch`, `/auth-kick`.
 - Mentions going live, starting a stream, or scheduling a broadcast on YouTube, Twitch, or Kick.
 - Shares a stream thumbnail image and provides a topic, co-streamers, or game name.
 - Asks to preview or update stream descriptions and titles.
+
+## Checking Status (/stream-status)
+When the user types `/stream-status` or asks for status:
+1. Invoke the `list_platforms` tool.
+2. Present a clean markdown status list:
+   - 🔴 **YouTube**: 🟢 Conectado / ⚪ Não configurado (Use `/auth-youtube` para conectar)
+   - 🟣 **Twitch**: 🟢 Conectado / ⚪ Não configurado (Use `/auth-twitch` para conectar)
+   - 🟢 **Kick**: 🟢 Conectado / ⚪ Não configurado (Use `/auth-kick` para configurar)
 
 ## Direct Authentication from Chat
 When the user says "conectar youtube", "autenticar twitch" or types `/auth-youtube` / `/auth-twitch`:

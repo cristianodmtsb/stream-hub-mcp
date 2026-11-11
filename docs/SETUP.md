@@ -51,11 +51,12 @@ Abra ou crie o arquivo `~/.stream-hub/config.json` e adicione:
 *(Dica: Se não souber seu `channelId` numérico, ferramentas como [twitchid.com](https://twitchid.com) convertem seu nome de usuário no ID numérico).*
 
 ### Passo 3: Autorizar
-No terminal, execute:
-```bash
-node dist/bin/cli.js auth twitch
-# (ou se instalado via plugin: node ~/.gemini/config/plugins/stream-hub/dist/bin/cli.js auth twitch)
-```
+Você pode autorizar de duas formas:
+- **No Chat do Agente:** Digite `/auth-twitch` (o agente abre a página de login para você).
+- **No Terminal:**
+  ```bash
+  node dist/bin/cli.js auth twitch
+  ```
 Seu navegador abrirá para você conceder permissão ao seu canal. O StreamHub receberá o token e salvará automaticamente em `~/.stream-hub/tokens.json`.
 
 ---
@@ -95,11 +96,12 @@ Adicione ao seu `~/.stream-hub/config.json`:
   }
 }
 ```
-E no terminal execute:
-```bash
-node dist/bin/cli.js auth youtube
-# (ou se instalado via plugin: node ~/.gemini/config/plugins/stream-hub/dist/bin/cli.js auth youtube)
-```
+E autorize:
+- **No Chat do Agente:** Digite `/auth-youtube` (o navegador abre para você permitir).
+- **No Terminal:**
+  ```bash
+  node dist/bin/cli.js auth youtube
+  ```
 
 ---
 
@@ -130,15 +132,23 @@ O agente chamará a ferramenta e salvará de forma segura no seu `~/.stream-hub/
 
 ---
 
-## 4. Testando o Status
+## 4. Testando o Status das Plataformas
 
-Para checar se suas plataformas estão prontas:
+Para verificar se suas contas estão conectadas:
+
+### Opção 1: No Chat do Agente (Recomendado)
+Digite no chat:
+> `/stream-status` (ou pergunte *"quais plataformas estão conectadas?"*)
+
+O agente exibirá uma lista com o status de cada serviço:
+```markdown
+- 🔴 YOUTUBE : 🟢 Conectado
+- 🟣 TWITCH  : 🟢 Conectado
+- 🟢 KICK    : 🟢 Conectado
+```
+
+### Opção 2: No Terminal
+Execute:
 ```bash
 node dist/bin/cli.js status
-```
-Você verá:
-```
-- YOUTUBE : 🟢 Autenticado
-- TWITCH  : 🟢 Autenticado
-- KICK    : 🟢 Autenticado
 ```
