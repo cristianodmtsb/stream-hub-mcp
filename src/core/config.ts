@@ -64,6 +64,7 @@ export class ConfigManager {
       ...platformConfig
     };
     fs.writeFileSync(this.configFile, JSON.stringify(current, null, 2), 'utf-8');
+    this.setSecureFilePermissions(this.configFile);
   }
 
   public async getAllTokens(): Promise<Record<string, PlatformTokens>> {

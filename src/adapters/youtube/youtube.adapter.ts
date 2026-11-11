@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 import { BasePlatformAdapter } from '../base.adapter.js';
 import type { LiveDetails, LiveResult } from '../../core/types.js';
 
@@ -56,13 +57,15 @@ export class YouTubeAdapter extends BasePlatformAdapter {
 
     try {
       const fileBuffer = fs.readFileSync(filePath);
+      const ext = path.extname(filePath).toLowerCase();
+      const contentType = ext === '.png' ? 'image/png' : 'image/jpeg';
       const url = `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${videoId}`;
 
       const res = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'image/jpeg'
+          'Content-Type': contentType
         },
         body: fileBuffer
       });
@@ -74,6 +77,15 @@ export class YouTubeAdapter extends BasePlatformAdapter {
   }
 
   public async createOrScheduleLive(details: LiveDetails): Promise<LiveResult> {
+    // Upfront thumbnail validation to prevent partial creation when thumb is missing
+    if (details.thumbnailPath && !this.validateThumbnailPath(details.thumbnailPath)) {
+      return {
+        platform: this.id,
+        success: false,
+        error: `Thumbnail path does not exist or is unreadable: ${details.thumbnailPath}`
+      };
+    }
+
     const tokens = await this.getTokens();
     if (!tokens?.accessToken) {
       return {
@@ -132,8 +144,8 @@ export class YouTubeAdapter extends BasePlatformAdapter {
       const broadcastId = data.id;
       const liveUrl = `https://youtube.com/live/${broadcastId}`;
 
-      // Upload thumbnail if provided and valid
-      if (details.thumbnailPath && this.validateThumbnailPath(details.thumbnailPath)) {
+      // Upload thumbnail if provided
+      if (details.thumbnailPath) {
         await this.uploadThumbnail(broadcastId, details.thumbnailPath, tokens.accessToken);
       }
 

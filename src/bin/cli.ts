@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import { runSetupWizard } from '../src/cli/setup.js';
-import { runAuthCommand } from '../src/cli/auth.js';
-import { ConfigManager } from '../src/core/config.js';
+import { runSetupWizard } from '../cli/setup.js';
+import { runAuthCommand } from '../cli/auth.js';
+import { ConfigManager } from '../core/config.js';
 
 const program = new Command();
 

@@ -35,42 +35,58 @@ export class AdapterRegistry {
     const results: Record<string, LiveResult> = {};
     let overallSuccess = true;
 
-    for (const platformId of platformsToTarget) {
+    // Dispatch concurrently across platforms
+    const dispatchPromises = platformsToTarget.map(async (platformId) => {
       const adapter = this.adapters.get(platformId);
       if (!adapter) {
-        results[platformId] = {
-          platform: platformId,
-          success: false,
-          error: `Adapter for platform '${platformId}' not registered.`
+        return {
+          platformId,
+          result: {
+            platform: platformId,
+            success: false,
+            error: `Adapter for platform '${platformId}' not registered.`
+          }
         };
-        overallSuccess = false;
-        continue;
       }
 
       try {
         const isConfigured = await adapter.isConfigured();
         if (!isConfigured) {
-          results[platformId] = {
-            platform: platformId,
-            success: false,
-            error: `Platform '${platformId}' is not configured or authenticated.`
+          return {
+            platformId,
+            result: {
+              platform: platformId,
+              success: false,
+              error: `Platform '${platformId}' is not configured or authenticated.`
+            }
           };
-          overallSuccess = false;
-          continue;
         }
 
         const res = await adapter.createOrScheduleLive(details);
-        results[platformId] = res;
-        if (!res.success) {
+        return {
+          platformId,
+          result: res
+        };
+      } catch (err: any) {
+        return {
+          platformId,
+          result: {
+            platform: platformId,
+            success: false,
+            error: err.message || String(err)
+          }
+        };
+      }
+    });
+
+    const settled = await Promise.allSettled(dispatchPromises);
+    for (const outcome of settled) {
+      if (outcome.status === 'fulfilled') {
+        const { platformId, result } = outcome.value;
+        results[platformId] = result;
+        if (!result.success) {
           overallSuccess = false;
         }
-      } catch (err: any) {
-        results[platformId] = {
-          platform: platformId,
-          success: false,
-          error: err.message || String(err)
-        };
-        overallSuccess = false;
       }
     }
 
