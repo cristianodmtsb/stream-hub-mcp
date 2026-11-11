@@ -107,15 +107,31 @@ Adicione ao seu arquivo de configuração de MCP (ex: `mcpSettings.json` ou `cla
 
 ---
 
-## 🧪 Comandos Úteis do CLI
+## 💬 Comandos Rápidos no Chat (Zero Terminal)
+
+Você pode gerenciar tudo diretamente na conversa com o agente:
+
+| Comando | O que faz |
+|---|---|
+| `/auth-youtube` | Inicia a autorização com o YouTube Live pelo navegador |
+| `/auth-twitch` | Inicia a autorização com a Twitch Helix pelo navegador |
+| `/auth-kick` | Configura seu canal e API Key da Kick diretamente no chat |
+| `Status` ou `Verificar plataformas` | Exibe quais plataformas estão ativas e autenticadas |
+
+---
+
+## 🧪 (Opcional) Comandos de Terminal / CLI
+
+Caso prefira rodar comandos diretamente no terminal:
 
 ```bash
 # Verificar status das plataformas conectadas
 node dist/bin/cli.js status
 
-# Iniciar autenticação OAuth de uma plataforma
-node dist/bin/cli.js auth twitch
+# Autenticar plataformas via terminal
 node dist/bin/cli.js auth youtube
+node dist/bin/cli.js auth twitch
+node dist/bin/cli.js auth kick
 ```
 
 ---
