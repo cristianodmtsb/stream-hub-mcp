@@ -18,17 +18,52 @@ Basta jogar a thumbnail no chat e dizer o tema da transmissão (ex: *"Vou jogar 
 
 ---
 
-## 📦 Instalação Rápida
+## 📦 Como Instalar
+
+Você pode instalar o StreamHub de duas formas:
+
+### Opção 1: Instalação via Plugin (Recomendada para Antigravity / AGY)
+
+No seu terminal ou chat com o agente:
+```bash
+# Instalação automática do plugin
+agy plugin install cristianodmtsb/stream-hub-mcp
+```
+*(Ou simplesmente clone na pasta global de plugins: `git clone git@github.com:cristianodmtsb/stream-hub-mcp.git ~/.gemini/config/plugins/stream-hub`)*
+
+Ao fazer isso:
+- O Antigravity descobre o plugin automaticamente em `~/.gemini/config/plugins/stream-hub/`.
+- O servidor MCP e a skill do agente são ativados imediatamente.
+
+---
+
+### Opção 2: Instalação Manual (Para Claude Desktop, Cursor ou Desenvolvimento)
 
 ```bash
-# Clone o repositório
+# 1. Clone o repositório onde preferir
 git clone git@github.com:cristianodmtsb/stream-hub-mcp.git
 cd stream-hub-mcp
 
-# Instale as dependências e compile
+# 2. Instale as dependências e compile o TypeScript
 npm install
 npm run build
 ```
+
+---
+
+## 📂 Onde ficam salvos os arquivos e como editar?
+
+Para garantir segurança e para que você **nunca perca suas configurações ao atualizar o plugin**, os arquivos são separados em dois lugares:
+
+| Tipo de Arquivo | Onde fica salvo? | Para que serve? |
+|---|---|---|
+| **Credenciais e Senhas** | `~/.stream-hub/config.json` e `tokens.json` | 100% privado na sua máquina, protegido contra sobrescritas. |
+| **Seus Templates Pessoais** | `~/.stream-hub/templates/default.md` | Onde você edita suas redes, regras e links com seu editor preferido. |
+| **Código-Fonte do Plugin** | `~/.gemini/config/plugins/stream-hub/` | Onde o código compilado do MCP e os templates padrão residem. |
+
+> 💡 **Como editar seus templates:**  
+> Basta abrir o arquivo `~/.stream-hub/templates/default.md` no VS Code ou Bloco de Notas. Ele sempre terá prioridade sobre os templates padrão do repositório!
+
 
 ---
 
