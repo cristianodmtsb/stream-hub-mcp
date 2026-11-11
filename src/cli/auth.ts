@@ -1,5 +1,26 @@
 import http from 'node:http';
+import { exec } from 'node:child_process';
 import { ConfigManager } from '../core/config.js';
+
+export function getAuthUrl(platform: string, clientId: string): string {
+  const redirectUri = 'http://localhost:8080/callback';
+  if (platform === 'twitch') {
+    return `https://id.twitch.tv/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=channel%3Amanage%3Abroadcast+user%3Aread%3Abroadcast`;
+  }
+  if (platform === 'youtube') {
+    return `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fyoutube&access_type=offline&prompt=consent`;
+  }
+  return '';
+}
+
+export function openBrowser(url: string): void {
+  const start = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+  try {
+    exec(`${start} "${url}"`);
+  } catch {
+    // Ignore if opening browser fails in headless environments
+  }
+}
 
 export async function runAuthCommand(platform: string, customBaseDir?: string): Promise<void> {
   const configManager = new ConfigManager(customBaseDir);
@@ -11,6 +32,12 @@ export async function runAuthCommand(platform: string, customBaseDir?: string): 
       console.log('1. Crie seu App no Twitch Developer Console (https://dev.twitch.tv/console/apps)');
       console.log('2. Configure o OAuth Redirect URL para: http://localhost:8080/callback');
       console.log('3. Guarde o Client ID e Client Secret em ~/.stream-hub/config.json\n');
+      const config = await configManager.getPlatformConfig('twitch');
+      if (config?.clientId) {
+        const url = getAuthUrl('twitch', config.clientId);
+        console.log(`Abrindo navegador para autorização: ${url}`);
+        openBrowser(url);
+      }
       await startLocalOAuthServer(configManager, 'twitch', 8080);
       break;
     }
@@ -20,6 +47,12 @@ export async function runAuthCommand(platform: string, customBaseDir?: string): 
       console.log('1. Ative a YouTube Data API v3 no Google Cloud Console (https://console.cloud.google.com)');
       console.log('2. Crie credenciais OAuth 2.0 (Aplicativo da Web com redirect http://localhost:8080/callback)');
       console.log('3. Guarde o Client ID e Client Secret em ~/.stream-hub/config.json\n');
+      const config = await configManager.getPlatformConfig('youtube');
+      if (config?.clientId) {
+        const url = getAuthUrl('youtube', config.clientId);
+        console.log(`Abrindo navegador para autorização: ${url}`);
+        openBrowser(url);
+      }
       await startLocalOAuthServer(configManager, 'youtube', 8080);
       break;
     }
@@ -109,8 +142,10 @@ export function startLocalOAuthServer(
   configManager: ConfigManager,
   platform: string,
   port = 8080
-): Promise<void> {
-  return new Promise((resolve) => {
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let timeout: NodeJS.Timeout;
+
     const server = http.createServer(async (req, res) => {
       const url = new URL(req.url || '/', `http://localhost:${port}`);
 
@@ -121,21 +156,23 @@ export function startLocalOAuthServer(
         if (error) {
           res.writeHead(400, { 'Content-Type': 'text/html; charset=utf-8' });
           res.end(`<h1>Erro na autenticação: ${error}</h1>`);
+          clearTimeout(timeout);
           server.close();
-          resolve();
+          resolve(`Erro na autenticação: ${error}`);
           return;
         }
 
         if (code) {
           res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-          res.end('<h1>✅ Autenticação realizada com sucesso! Você já pode fechar esta aba.</h1>');
+          res.end('<h1>✅ Autenticação realizada com sucesso! Você já pode fechar esta aba e voltar para o chat.</h1>');
 
           const tokens = await exchangeOAuthCode(platform, code, configManager);
           await configManager.saveTokens(platform, tokens);
 
           console.log(`\n✅ Sucesso! Token de acesso da plataforma '${platform}' configurado com sucesso em ~/.stream-hub/tokens.json`);
+          clearTimeout(timeout);
           server.close();
-          resolve();
+          resolve(`✅ Plataforma '${platform}' autenticada com sucesso! Tokens salvos localmente.`);
           return;
         }
       }
@@ -146,7 +183,17 @@ export function startLocalOAuthServer(
 
     server.listen(port, () => {
       console.log(`📡 Servidor de autenticação local aguardando callback em: http://localhost:${port}/callback`);
-      console.log('Pressione Ctrl+C para cancelar.');
     });
+
+    server.on('error', (err) => {
+      clearTimeout(timeout);
+      reject(err);
+    });
+
+    // Timeout after 3 minutes if user didn't complete browser auth
+    timeout = setTimeout(() => {
+      server.close();
+      resolve(`Tempo limite excedido para autenticação da plataforma '${platform}'. Tente novamente.`);
+    }, 180000);
   });
 }

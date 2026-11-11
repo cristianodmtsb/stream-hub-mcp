@@ -6,6 +6,7 @@ import { TemplateEngine } from '../core/template.js';
 import { YouTubeAdapter } from '../adapters/youtube/youtube.adapter.js';
 import { TwitchAdapter } from '../adapters/twitch/twitch.adapter.js';
 import { KickAdapter } from '../adapters/kick/kick.adapter.js';
+import { getAuthUrl, openBrowser, startLocalOAuthServer } from '../cli/auth.js';
 import type { LiveDetails, MultiPlatformResult, StreamTemplate } from '../core/types.js';
 
 export interface PreviewParams {
@@ -126,6 +127,37 @@ export class StreamOrchestrator {
       tags,
       game: params.game,
       thumbnailPath: params.thumbnailPath
+    };
+  }
+
+  public async authenticatePlatform(platform: string): Promise<{ success: boolean; message: string; authUrl?: string }> {
+    const norm = platform.toLowerCase();
+    const config = await this.configManager.getPlatformConfig(norm);
+
+    if (norm === 'kick') {
+      return {
+        success: true,
+        message: 'Para a Kick, insira seu channelSlug e apiKey em ~/.stream-hub/config.json.'
+      };
+    }
+
+    if (!config?.clientId) {
+      return {
+        success: false,
+        message: `Configure o clientId de '${platform}' primeiro em ~/.stream-hub/config.json (consulte o docs/SETUP.md para o passo a passo).`
+      };
+    }
+
+    const authUrl = getAuthUrl(norm, config.clientId);
+    openBrowser(authUrl);
+
+    // Start OAuth listener asynchronously
+    startLocalOAuthServer(this.configManager, norm, 8080).catch(() => {});
+
+    return {
+      success: true,
+      authUrl,
+      message: `Abri o navegador para você autorizar o ${platform.toUpperCase()}. Caso não tenha aberto, clique neste link: ${authUrl}`
     };
   }
 

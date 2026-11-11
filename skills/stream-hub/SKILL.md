@@ -9,11 +9,18 @@ This skill guides the agent in using the `stream-hub` MCP tools to configure mul
 
 ## When to Activate
 Activate this skill whenever the user:
+- Types slash commands like `/auth-youtube`, `/auth-twitch`, `/auth-kick` or asks to connect/authenticate accounts.
 - Mentions going live, starting a stream, or scheduling a broadcast on YouTube, Twitch, or Kick.
 - Shares a stream thumbnail image and provides a topic, co-streamers, or game name.
 - Asks to preview or update stream descriptions and titles.
 
-## Workflow
+## Direct Authentication from Chat
+When the user says "conectar youtube", "autenticar twitch" or types `/auth-youtube` / `/auth-twitch`:
+1. Invoke the `authenticate_platform` tool with the requested platform.
+2. Present the returned authentication URL as a clickable link and inform the user that the browser was opened.
+3. Once the user approves in the browser, inform them that the platform is ready.
+
+## Workflow for Live Creation
 
 ### 1. Context & Game Detection
 - **Inspect the thumbnail image** (if provided): extract visual clues, character/game art, and prominent text.

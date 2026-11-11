@@ -67,15 +67,16 @@ Para garantir segurança e para que você **nunca perca suas configurações ao 
 
 ---
 
-## ⚡ Configuração Inicial (Assistente)
+## ⚡ Autenticação Direta pelo Chat (Zero Terminal)
 
-Execute o assistente inicial para criar os diretórios e o template padrão:
+Se você instalou como plugin ou MCP, não precisa abrir o terminal para autorizar suas contas:
+Basta dizer no chat:
+- 💬 *"Conectar Twitch"* ou `/auth-twitch`
+- 💬 *"Conectar YouTube"* ou `/auth-youtube`
 
-```bash
-node dist/bin/cli.js setup
-```
+O agente chamará a ferramenta de autenticação, abrirá seu navegador automaticamente e confirmará o login assim que você der "Permitir"!
 
-Isso criará a pasta `~/.stream-hub/` e o seu primeiro template em `~/.stream-hub/templates/default.md`.
+*(O comando de terminal `node dist/bin/cli.js auth <platform>` continua disponível como alternativa caso prefira).*
 
 ---
 

@@ -34,6 +34,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
         }
       },
       {
+        name: 'authenticate_platform',
+        description: 'Triggers browser OAuth authorization directly from chat for a platform (youtube or twitch).',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            platform: {
+              type: 'string',
+              description: 'Platform to authenticate: "youtube" or "twitch"'
+            }
+          },
+          required: ['platform']
+        }
+      },
+      {
         name: 'get_templates',
         description: 'Returns available user-editable Markdown templates and their metadata.',
         inputSchema: {
@@ -94,6 +108,14 @@ server.setRequestHandler(CallToolRequestSchema, async request => {
         const platforms = await orchestrator.listPlatforms();
         return {
           content: [{ type: 'text', text: JSON.stringify(platforms, null, 2) }]
+        };
+      }
+
+      case 'authenticate_platform': {
+        const { platform } = args as any;
+        const res = await orchestrator.authenticatePlatform(platform);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(res, null, 2) }]
         };
       }
 
