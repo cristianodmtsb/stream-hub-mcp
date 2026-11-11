@@ -60,7 +60,7 @@ export async function runAuthCommand(platform: string, customBaseDir?: string): 
     case 'kick': {
       console.log('\n--- 🟢 Autenticação Kick ---');
       console.log('A Kick utiliza tokens de API de canal ou OAuth.');
-      console.log('Adicione seu channelSlug e apiKey em ~/.stream-hub/config.json');
+      console.log('Adicione seu channelSlug e apiKey em ~/.stream-hub/config.json ou use /auth-kick no chat.');
       break;
     }
 
@@ -97,6 +97,31 @@ async function exchangeOAuthCode(platform: string, code: string, configManager: 
 
       if (res.ok) {
         const data: any = await res.json();
+
+        // Auto-detect channelId and channelName from Twitch Helix API
+        try {
+          const userRes = await fetch('https://api.twitch.tv/helix/users', {
+            headers: {
+              'Client-Id': config.clientId,
+              'Authorization': `Bearer ${data.access_token}`
+            }
+          });
+          if (userRes.ok) {
+            const userData: any = await userRes.json();
+            if (userData.data && userData.data.length > 0) {
+              const user = userData.data[0];
+              await configManager.savePlatformConfig('twitch', {
+                channelId: user.id,
+                channelName: user.login,
+                displayName: user.display_name
+              });
+              console.log(`[Twitch] Canal detectado e configurado automaticamente: ${user.display_name} (ID: ${user.id})`);
+            }
+          }
+        } catch (e) {
+          console.warn('[Twitch] Não foi possível obter dados do canal automaticamente:', e);
+        }
+
         return {
           accessToken: data.access_token,
           refreshToken: data.refresh_token,
@@ -122,6 +147,29 @@ async function exchangeOAuthCode(platform: string, code: string, configManager: 
 
       if (res.ok) {
         const data: any = await res.json();
+
+        // Auto-detect YouTube channel ID and Title
+        try {
+          const chRes = await fetch('https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true', {
+            headers: {
+              'Authorization': `Bearer ${data.access_token}`
+            }
+          });
+          if (chRes.ok) {
+            const chData: any = await chRes.json();
+            if (chData.items && chData.items.length > 0) {
+              const ch = chData.items[0];
+              await configManager.savePlatformConfig('youtube', {
+                channelId: ch.id,
+                channelTitle: ch.snippet?.title
+              });
+              console.log(`[YouTube] Canal detectado e configurado automaticamente: ${ch.snippet?.title} (ID: ${ch.id})`);
+            }
+          }
+        } catch (e) {
+          console.warn('[YouTube] Não foi possível obter dados do canal automaticamente:', e);
+        }
+
         return {
           accessToken: data.access_token,
           refreshToken: data.refresh_token,
@@ -172,7 +220,7 @@ export function startLocalOAuthServer(
           console.log(`\n✅ Sucesso! Token de acesso da plataforma '${platform}' configurado com sucesso em ~/.stream-hub/tokens.json`);
           clearTimeout(timeout);
           server.close();
-          resolve(`✅ Plataforma '${platform}' autenticada com sucesso! Tokens salvos localmente.`);
+          resolve(`✅ Plataforma '${platform}' autenticada com sucesso! Informações do canal salvas automaticamente.`);
           return;
         }
       }

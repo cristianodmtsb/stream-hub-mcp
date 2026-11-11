@@ -35,29 +35,27 @@ Para atualizar o título, categoria/jogo e tags da sua live na Twitch:
 5. Na tela do app, copie o **Client ID** e clique em **New Secret** para copiar o **Client Secret**.
 
 ### Passo 2: Salvar no seu `~/.stream-hub/config.json`
-Abra ou crie o arquivo `~/.stream-hub/config.json` e adicione:
+Você só precisa colar o `clientId` e o `clientSecret`:
 ```json
 {
   "platforms": {
     "twitch": {
       "clientId": "SEU_CLIENT_ID_DA_TWITCH",
-      "clientSecret": "SEU_CLIENT_SECRET_DA_TWITCH",
-      "channelName": "seu_nome_de_usuario_na_twitch",
-      "channelId": "SEU_BROADCASTER_ID"
+      "clientSecret": "SEU_CLIENT_SECRET_DA_TWITCH"
     }
   }
 }
 ```
-*(Dica: Se não souber seu `channelId` numérico, ferramentas como [twitchid.com](https://twitchid.com) convertem seu nome de usuário no ID numérico).*
+> ✨ **Detecção Automática:** O seu `channelName` e `channelId` numérico são **detectados e preenchidos 100% sozinhos** pela API da Twitch assim que você fizer o login. Você não precisa caçar nem preencher nenhum ID!
 
 ### Passo 3: Autorizar
 Você pode autorizar de duas formas:
-- **No Chat do Agente:** Digite `/auth-twitch` (o agente abre a página de login para você).
+- **No Chat do Agente:** Digite `/auth-twitch` (o navegador abre para você clicar em Permitir).
 - **No Terminal:**
   ```bash
   node dist/bin/cli.js auth twitch
   ```
-Seu navegador abrirá para você conceder permissão ao seu canal. O StreamHub receberá o token e salvará automaticamente em `~/.stream-hub/tokens.json`.
+Ao autorizar, o StreamHub obtém os dados do seu canal automaticamente e salva os tokens com segurança em `~/.stream-hub/tokens.json`.
 
 ---
 
@@ -96,6 +94,8 @@ Adicione ao seu `~/.stream-hub/config.json`:
   }
 }
 ```
+> ✨ **Detecção Automática:** O ID e nome do seu canal do YouTube são detectados e associados automaticamente no momento em que você autoriza!
+
 E autorize:
 - **No Chat do Agente:** Digite `/auth-youtube` (o navegador abre para você permitir).
 - **No Terminal:**

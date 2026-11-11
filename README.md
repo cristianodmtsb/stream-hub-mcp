@@ -69,11 +69,11 @@ Para garantir segurança e para que você **nunca perca suas configurações ao 
 
 ## ⚡ Autenticação Direta pelo Chat (Zero Terminal)
 
-Se você instalou como plugin ou MCP, não precisa abrir o terminal ou arquivos JSON para autorizar suas contas:
+Se você instalou como plugin ou MCP, não precisa abrir o terminal ou caçar IDs numéricos:
 Basta dizer no chat:
-- 💬 **Twitch:** *"Conectar Twitch"* ou `/auth-twitch` (abre o navegador para autorizar).
-- 💬 **YouTube:** *"Conectar YouTube"* ou `/auth-youtube` (abre o navegador para autorizar).
-- 💬 **Kick:** *"Conectar Kick"* ou `/auth-kick` (basta informar seu canal e API key direto no chat e o agente salva para você).
+- 💬 **Twitch:** *"Conectar Twitch"* ou `/auth-twitch` (abre o navegador e **detecta seu canal e ID da Twitch sozinho**).
+- 💬 **YouTube:** *"Conectar YouTube"* ou `/auth-youtube` (abre o navegador e **detecta o ID do seu canal do YouTube sozinho**).
+- 💬 **Kick:** *"Conectar Kick"* ou `/auth-kick` (informa seu canal e chave; o StreamHub **verifica e vincula o canal oficial sozinho**).
 
 O agente chamará a ferramenta de autenticação, abrirá o navegador ou salvará as chaves automaticamente na sua máquina (`~/.stream-hub/config.json`).
 

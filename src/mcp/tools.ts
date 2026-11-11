@@ -145,13 +145,35 @@ export class StreamOrchestrator {
             message: 'Para configurar a Kick, preciso do seu `channelSlug` (nome do canal) e da sua `apiKey`. Exemplo: `/auth-kick canal chave123`'
           };
         }
-        await this.configManager.savePlatformConfig('kick', {
-          channelSlug: credentials.channelSlug,
-          apiKey: credentials.apiKey
-        });
+
+        let channelInfo = '';
+        try {
+          const kickRes = await fetch(`https://kick.com/api/v1/channels/${encodeURIComponent(credentials.channelSlug)}`);
+          if (kickRes.ok) {
+            const data: any = await kickRes.json();
+            await this.configManager.savePlatformConfig('kick', {
+              channelSlug: credentials.channelSlug,
+              apiKey: credentials.apiKey,
+              channelId: String(data.id || ''),
+              verified: true
+            });
+            channelInfo = ` (Canal oficial verificado: ${data.user?.username || credentials.channelSlug})`;
+          } else {
+            await this.configManager.savePlatformConfig('kick', {
+              channelSlug: credentials.channelSlug,
+              apiKey: credentials.apiKey
+            });
+          }
+        } catch {
+          await this.configManager.savePlatformConfig('kick', {
+            channelSlug: credentials.channelSlug,
+            apiKey: credentials.apiKey
+          });
+        }
+
         return {
           success: true,
-          message: `✅ Kick configurada com sucesso para o canal '${credentials.channelSlug}'! Já pode transmitir.`
+          message: `✅ Kick configurada e conectada com sucesso para o canal '${credentials.channelSlug}'${channelInfo}!`
         };
       }
 
